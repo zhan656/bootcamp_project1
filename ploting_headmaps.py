@@ -11,13 +11,13 @@ class main():
     # import json
     # from states_trans import states
     
-    def per_year(data_all_years, year):
+    def per_year(data_all_years,state_pop, year):
         df_state1 = data_all_years.loc[data_all_years['year']==year,:]
         df_grouped_flu = df_state1.groupby(['state']).sum()
         df_grouped_flu = pd.DataFrame(df_grouped_flu[['flu_cases','flu_percent']])
-        sum_cases = df_grouped_flu['flu_cases'].sum()
-        percent_flu = [(i/sum_cases)*100 for i in df_grouped_flu['flu_cases']]
-        df_grouped_flu['flu_percent'] = percent_flu
+        # sum_cases = df_grouped_flu['flu_cases'].sum()
+        # percent_flu = [(i/sum_cases)*100 for i in df_grouped_flu['flu_cases']]
+        # df_grouped_flu['flu_percent'] = percent_flu
         # Accumulated Vaccination Rate and Cases in each state
         df_grouped_vac = df_state1.loc[df_state1['week']==52,['state','vac_percent','vaccinations']]
         df_grouped_vac.head()
@@ -42,7 +42,8 @@ class main():
         
         # df with both flu and vaccinations
         df_flu_vac = pd.merge(df_grouped_vac, df_grouped_flu, on="code")
-        
+        df_flu_vac['population'] = [float(state_pop.loc[st,str(year)]) for st in df_flu_vac['state']]
+        df_flu_vac['flu_percent'] = df_flu_vac['flu_cases']/df_flu_vac['population']/10   
         return (df_flu_vac)
     
     
